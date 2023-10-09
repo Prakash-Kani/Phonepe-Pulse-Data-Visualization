@@ -21,6 +21,8 @@ def Number_Conversion(number):
         number = f'{round(number / 10**7,2)} Crores'
     elif number // 10**5:
         number = f'{round(number / 10**5,2)} Lakhs'
+    elif number // 10**3:
+        number = f'{round(number / 10**3,2)} K'
     return number
 
 
@@ -68,7 +70,8 @@ if selected == "Explore Data":
     st.markdown("## :violet[A User-Friendly Tool Using Streamlit and Plotly]")
     tab1, tab2= st.tabs(['**Transaction**','**User**'])
     with tab1:
-        # tran_type = st.sidebar.selectbox('**Select the Type of Transcation**',['Recharge & bill payments', 'Peer-to-peer payments','Merchant payments', 'Financial Services','Others'])
+        # if tab1:
+        #     tran_type = st.sidebar.selectbox('**Select the Type of Transcation**',['Recharge & bill payments', 'Peer-to-peer payments','Merchant payments', 'Financial Services','Others'])
 
         col1, col2 = st.columns([2,1], gap='medium')
         with col2:
@@ -154,7 +157,23 @@ if selected == "Explore Data":
                                     \n9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]
                                     \n10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
             elif Tran_pincode_button:
-                st.write('new')
+                mycursor.execute(f"""SELECT Pincode, Transaction_Amount
+                                    FROM top_transaction_pincode
+                                    WHERE Year =2018 AND Quarter =1
+                                    ORDER BY Transaction_Amount DESC LIMIT 10;""")
+                data3 = mycursor.fetchall()
+                df4=pd.DataFrame(data3, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df4['Pincode'].iloc[0]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[0])}]
+                                    \n2.  {df4['Pincode'].iloc[1]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[1])}]
+                                    \n3.  {df4['Pincode'].iloc[2]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[2])}]
+                                    \n4.  {df4['Pincode'].iloc[3]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[3])}]
+                                    \n5.  {df4['Pincode'].iloc[4]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[4])}]
+                                    \n6.  {df4['Pincode'].iloc[5]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[5])}]
+                                    \n7.  {df4['Pincode'].iloc[6]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[6])}]
+                                    \n8.  {df4['Pincode'].iloc[7]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[7])}]
+                                    \n9.  {df4['Pincode'].iloc[8]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[8])}]
+                                    \n10.  {df4['Pincode'].iloc[9]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[9])}]""")
+                st.dataframe(df4)
 
         with col1:
             if year and quarter:
