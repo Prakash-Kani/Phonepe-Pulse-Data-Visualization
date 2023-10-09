@@ -79,53 +79,84 @@ if selected == "Explore Data":
                                 WHERE Year = {year} AND Quarter = {quarter} GROUP BY Transaction_Type) as g;""")
             data = mycursor.fetchall()
             df1=pd.DataFrame(data, columns = [i[0] for i in mycursor.description])
-            st.markdown('### :blue[***All PhonePe transactions (UPI + Cards + Wallets***])')
+            st.markdown('### ***All PhonePe transactions (UPI + Cards + Wallets***)')
             totalcount=df1['Total_Count'].sum()
-            st.markdown(f'## {totalcount}')
+            st.markdown(f'## :blue[{totalcount}]')
             # st.write(totalcount)
-            st.markdown('#### :blue[***Total payment value***]')
+            st.markdown('#### ***Total payment value***')
             totalamount=df1['Total_Amount'].sum()
-            st.markdown(f'#### {Number_Conversion(totalamount)}')
+            st.markdown(f'#### :blue[{Number_Conversion(totalamount)}]')
             # st.write(totalamount)
-            st.markdown('#### :blue[***Avg. transaction value***]')
+            st.markdown('#### ***Avg. transaction value***')
             # average=totalamount//totalcount
             average= df1['Average_Transaction'].mean()
-            st.markdown(f'### {round(average)}')
+            st.markdown(f'### :blue[{round(average)}]')
             # st.write(average) 
             st.header(':blue[Categories]', divider='rainbow')
-            a=df1.iloc[0: , :2]
-            b=df1.iloc[1,0:2]
-            st.dataframe(b)
-            st.write(a)
+            st.markdown(f"""##### 1.  {df1['Transaction_Type'].iloc[0]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[0])}]
+                                \n2.  {df1['Transaction_Type'].iloc[1]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[1])}]
+                                \n3.  {df1['Transaction_Type'].iloc[2]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[2])}]
+                                \n4.  {df1['Transaction_Type'].iloc[3]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[3])}]
+                                \n5.  {df1['Transaction_Type'].iloc[4]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[4])}]""")
             bar1=st.button('Bar Graph')
             st.markdown('###### ******')
             st.header(':blue[Top 10 states]', divider='rainbow')
-            c=st.button('State')
-            d=st.button('district')
-            if c:
+            # c=st.button('State')
+            # d=st.button('district')
+            col8,col9,col10 =st.columns([1,1,2])
+            with col8:
+                Tran_state_button = st.button('State')
+            with col9:
+                Tran_district_button = st.button('District')
+            with col8:
+                Tran_pincode_button = st.button('Postal Code')
+            if Tran_state_button:
                 mycursor.execute(f"""SELECT top.State, top.Total_Transaction_Amount
                                 FROM (
                                     SELECT State, SUM(Transaction_Amount) as Total_Transaction_Amount
-                                    FROM top_transaction
+                                    FROM top_transaction_state
                                     WHERE Year = {year} AND Quarter = {quarter}
                                     GROUP BY State
                                 ) as top
                                 ORDER BY top.Total_Transaction_Amount desc limit 10;""")
                 data1 = mycursor.fetchall()
                 df2=pd.DataFrame(data1, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df2['State'].iloc[0]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[0])}]
+                                    \n2.  {df2['State'].iloc[1]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[1])}]
+                                    \n3.  {df2['State'].iloc[2]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[2])}]
+                                    \n4.  {df2['State'].iloc[3]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[3])}]
+                                    \n5.  {df2['State'].iloc[4]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[4])}]
+                                    \n6.  {df2['State'].iloc[5]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[5])}]
+                                    \n7.  {df2['State'].iloc[6]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[6])}]
+                                    \n8.  {df2['State'].iloc[7]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[7])}]
+                                    \n9.  {df2['State'].iloc[8]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[8])}]
+                                    \n10.  {df2['State'].iloc[9]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[9])}]""")
                 st.dataframe(df2)
-            elif d:
+            elif Tran_district_button:
                 mycursor.execute(f"""SELECT top.District, top.Total_Transaction_Amount
                                 FROM (
                                     SELECT District, SUM(Transaction_Amount) as Total_Transaction_Amount
-                                    FROM top_transaction
+                                    FROM top_transaction_state
                                     WHERE Year = {year} AND Quarter = {quarter}
                                     GROUP BY District
                                 ) as top
                                 ORDER BY top.Total_Transaction_Amount desc limit 10;""")
                 data2 = mycursor.fetchall()
-                df2=pd.DataFrame(data2, columns = [i[0] for i in mycursor.description])
+                df3=pd.DataFrame(data2, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df3['District'].iloc[0]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[0])}]
+                                    \n2.  {df3['District'].iloc[1]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[1])}]
+                                    \n3.  {df3['District'].iloc[2]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[2])}]
+                                    \n4.  {df3['District'].iloc[3]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[3])}]
+                                    \n5.  {df3['District'].iloc[4]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[4])}]
+                                    \n6.  {df3['District'].iloc[5]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[5])}]
+                                    \n7.  {df3['District'].iloc[6]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[6])}]
+                                    \n8.  {df3['District'].iloc[7]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[7])}]
+                                    \n9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]
+                                    \n10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
+
                 st.dataframe(df2)
+            elif Tran_pincode_button:
+                st.write('new')
 
         with col1:
             if year and quarter:
@@ -189,10 +220,10 @@ if selected == "Explore Data":
 
             st.plotly_chart(fig)
 
-            if c:
-                st.write(a)
+            if Tran_state_button:
+                st.write(df1 )
 
-            elif d:
+            elif Tran_state_button:
                 st.dataframe(df2)
 
             if bar1:
@@ -203,7 +234,7 @@ if selected == "Explore Data":
             #     plt.title(f"Category")
             #     plt.xticks(rotation=45, ha='right')
             #     plt.tight_layout()
-                st.bar_chart(a, x='Transaction_Type', y = 'Total_Amount' )
+                st.bar_chart(df1, x='Transaction_Type', y = 'Total_Amount' )
 
 
     with tab2:
