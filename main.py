@@ -18,9 +18,9 @@ mycursor = db.cursor(buffered = True)
 
 def Number_Conversion(number):
     if number // 10**7:
-        number = f'{number // 10**7} Crores'
+        number = f'{round(number / 10**7,2)} Crores'
     elif number // 10**5:
-        number = f'{number // 10**5} Lakhs'
+        number = f'{round(number / 10**5,2)} Lakhs'
     return number
 
 
@@ -103,12 +103,12 @@ if selected == "Explore Data":
             st.header(':blue[Top 10 states]', divider='rainbow')
             # c=st.button('State')
             # d=st.button('district')
-            col8,col9,col10 =st.columns([1,1,2])
-            with col8:
+            col3,col4,col5 =st.columns([1,1,2])
+            with col3:
                 Tran_state_button = st.button('State')
-            with col9:
+            with col4:
                 Tran_district_button = st.button('District')
-            with col8:
+            with col5:
                 Tran_pincode_button = st.button('Postal Code')
             if Tran_state_button:
                 mycursor.execute(f"""SELECT top.State, top.Total_Transaction_Amount
@@ -153,8 +153,6 @@ if selected == "Explore Data":
                                     \n8.  {df3['District'].iloc[7]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[7])}]
                                     \n9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]
                                     \n10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
-
-                st.dataframe(df2)
             elif Tran_pincode_button:
                 st.write('new')
 
@@ -245,12 +243,12 @@ if selected == "Explore Data":
             mycursor.execute(f"""SELECT State, sum(Registered_User) as Registered_PhonePe_Users, sum(App_Opens) as PhonePe_App_Opens FROM map_user 
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY State ORDER BY State;""")
             data1 = mycursor.fetchall()
-            df7=pd.DataFrame(data1, columns = [i[0] for i in mycursor.description])
+            df5=pd.DataFrame(data1, columns = [i[0] for i in mycursor.description])
             st.markdown(f'##### :blue[***Registered PhonePe users till {quarter} {year}***]')
-            registeredcount=df7['Registered_PhonePe_Users'].sum()
+            registeredcount=df5['Registered_PhonePe_Users'].sum()
             st.markdown(f'## {registeredcount}')
             st.markdown(f'##### :blue[***PhonePe app opens in {quarter} {year}***]')
-            appopens=df7['PhonePe_App_Opens'].sum()
+            appopens=df5['PhonePe_App_Opens'].sum()
             st.markdown(f'#### {Number_Conversion(appopens)}')
 
             col8,col9,col10 =st.columns(3)
@@ -264,23 +262,52 @@ if selected == "Explore Data":
                 mycursor.execute(f"""SELECT State, sum(Registered_User) as Registered_User FROM top_user_district 
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY State ORDER BY Registered_User DESC LIMIT 10;""")
                 data8 = mycursor.fetchall()
-
-                df8 = pd.DataFrame(data8, columns = [i[0] for i in mycursor.description])
-                st.dataframe(df8)
+                df6 = pd.DataFrame(data8, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df6['State'].iloc[0]} :blue[{Number_Conversion(df6['Registered_User'].iloc[0])}]
+                                    \n2.  {df6['State'].iloc[1]} :blue[{Number_Conversion(df6['Registered_User'].iloc[1])}]
+                                    \n3.  {df6['State'].iloc[2]} :blue[{Number_Conversion(df6['Registered_User'].iloc[2])}]
+                                    \n4.  {df6['State'].iloc[3]} :blue[{Number_Conversion(df6['Registered_User'].iloc[3])}]
+                                    \n5.  {df6['State'].iloc[4]} :blue[{Number_Conversion(df6['Registered_User'].iloc[4])}]
+                                    \n6.  {df6['State'].iloc[5]} :blue[{Number_Conversion(df6['Registered_User'].iloc[5])}]
+                                    \n7.  {df6['State'].iloc[6]} :blue[{Number_Conversion(df6['Registered_User'].iloc[6])}]
+                                    \n8.  {df6['State'].iloc[7]} :blue[{Number_Conversion(df6['Registered_User'].iloc[7])}]
+                                    \n9.  {df6['State'].iloc[8]} :blue[{Number_Conversion(df6['Registered_User'].iloc[8])}]
+                                    \n10.  {df6['State'].iloc[9]} :blue[{Number_Conversion(df6['Registered_User'].iloc[9])}]""")
+                st.dataframe(df6)
             elif district_button:
                 mycursor.execute(f"""SELECT District, sum(Registered_User) as Registered_User FROM top_user_district 
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY District ORDER BY Registered_User DESC LIMIT 10;""")
                 data9 = mycursor.fetchall()
 
-                df9 = pd.DataFrame(data9, columns = [i[0] for i in mycursor.description])
-                st.dataframe(df9)
+                df7 = pd.DataFrame(data9, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df7['District'].iloc[0]} :blue[{Number_Conversion(df7['Registered_User'].iloc[0])}]
+                                    \n2.  {df7['District'].iloc[1]} :blue[{Number_Conversion(df7['Registered_User'].iloc[1])}]
+                                    \n3.  {df7['District'].iloc[2]} :blue[{Number_Conversion(df7['Registered_User'].iloc[2])}]
+                                    \n4.  {df7['District'].iloc[3]} :blue[{Number_Conversion(df7['Registered_User'].iloc[3])}]
+                                    \n5.  {df7['District'].iloc[4]} :blue[{Number_Conversion(df7['Registered_User'].iloc[4])}]
+                                    \n6.  {df7['District'].iloc[5]} :blue[{Number_Conversion(df7['Registered_User'].iloc[5])}]
+                                    \n7.  {df7['District'].iloc[6]} :blue[{Number_Conversion(df7['Registered_User'].iloc[6])}]
+                                    \n8.  {df7['District'].iloc[7]} :blue[{Number_Conversion(df7['Registered_User'].iloc[7])}]
+                                    \n9.  {df7['District'].iloc[8]} :blue[{Number_Conversion(df7['Registered_User'].iloc[8])}]
+                                    \n10.  {df7['District'].iloc[9]} :blue[{Number_Conversion(df7['Registered_User'].iloc[9])}]""")
+                st.dataframe(df7)
             elif pincode_button:
                 mycursor.execute(f"""SELECT Pincode, Registered_User FROM top_user_pincode 
                                  WHERE Year = {year} AND Quarter = {quarter} ORDER BY Registered_User DESC LIMIT 10;""")
                 data10 = mycursor.fetchall()
 
-                df10 = pd.DataFrame(data10, columns = [i[0] for i in mycursor.description])
-                st.dataframe(df10)
+                df8 = pd.DataFrame(data10, columns = [i[0] for i in mycursor.description])
+                st.markdown(f"""##### 1.  {df8['Pincode'].iloc[0]} :blue[{Number_Conversion(df8['Registered_User'].iloc[0])}]
+                                    \n 2.  {df8['Pincode'].iloc[1]} :blue[{Number_Conversion(df8['Registered_User'].iloc[1])}]
+                                    \n 3.  {df8['Pincode'].iloc[2]} :blue[{Number_Conversion(df8['Registered_User'].iloc[2])}]
+                                    \n4.  {df8['Pincode'].iloc[3]} :blue[{Number_Conversion(df8['Registered_User'].iloc[3])}]
+                                    \n5.  {df8['Pincode'].iloc[4]} :blue[{Number_Conversion(df8['Registered_User'].iloc[4])}]
+                                    \n6.  {df8['Pincode'].iloc[5]} :blue[{Number_Conversion(df8['Registered_User'].iloc[5])}]
+                                    \n7.  {df8['Pincode'].iloc[6]} :blue[{Number_Conversion(df8['Registered_User'].iloc[6])}]
+                                    \n8.  {df8['Pincode'].iloc[7]} :blue[{Number_Conversion(df8['Registered_User'].iloc[7])}]
+                                    \n9.  {df8['Pincode'].iloc[8]} :blue[{Number_Conversion(df8['Registered_User'].iloc[8])}]
+                                    \n10.  {df8['Pincode'].iloc[9]} :blue[{Number_Conversion(df8['Registered_User'].iloc[9])}]""")
+                st.dataframe(df8)
 
         with col6:
             if year and quarter:
