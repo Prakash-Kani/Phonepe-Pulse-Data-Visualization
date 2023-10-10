@@ -6,9 +6,25 @@ import requests
 import json
 import matplotlib.pyplot as plt
 import plotly.express as px
+import seaborn as sns
 import mysql.connector
 import os
 from dotenv import load_dotenv
+
+# Load environment variables from .env file
+# load_dotenv()
+
+# # MYSQL Connection
+# mysql_host_name = os.getenv("MYSQL_HOST_NAME")
+# mysql_user_name = os.getenv("MYSQL_USER_NAME")
+# mysql_password = os.getenv("MYSQL_PASSWORD")
+# mysql_database_name = os.getenv("MYSQL_DATABASE_NAME")
+
+# db = mysql.connector.connect(host = mysql_host_name,
+#                              user = mysql_user_name,
+#                              password = mysql_password,
+#                              database = mysql_database_name)
+# mycursor = db.cursor(buffered = True)
 
 db = mysql.connector.connect(host = 'localhost',
                              user = 'root',
@@ -102,7 +118,6 @@ if selected == "Explore Data":
                                 \n4.  {df1['Transaction_Type'].iloc[3]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[3])}]
                                 \n5.  {df1['Transaction_Type'].iloc[4]} :blue[{Number_Conversion(df1['Total_Amount'].iloc[4])}]""")
             bar1=st.button('Bar Graph')
-            st.markdown('###### ******')
             st.header(':blue[Top 10 states]', divider='rainbow')
             # c=st.button('State')
             # d=st.button('district')
@@ -146,16 +161,16 @@ if selected == "Explore Data":
                                 ORDER BY top.Total_Transaction_Amount desc limit 10;""")
                 data2 = mycursor.fetchall()
                 df3=pd.DataFrame(data2, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df3['District'].iloc[0]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[0])}]
-                                    \n2.  {df3['District'].iloc[1]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[1])}]
-                                    \n3.  {df3['District'].iloc[2]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[2])}]
-                                    \n4.  {df3['District'].iloc[3]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[3])}]
-                                    \n5.  {df3['District'].iloc[4]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[4])}]
-                                    \n6.  {df3['District'].iloc[5]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[5])}]
-                                    \n7.  {df3['District'].iloc[6]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[6])}]
-                                    \n8.  {df3['District'].iloc[7]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[7])}]
-                                    \n9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]
-                                    \n10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
+                st.markdown(f"""##### 1.  {df3['District'].iloc[0]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[0])}]""")
+                st.markdown(f"""##### 2.  {df3['District'].iloc[1]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[1])}]""")
+                st.markdown(f"""##### 3.  {df3['District'].iloc[2]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[2])}]""")
+                st.markdown(f"""##### 4.  {df3['District'].iloc[3]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[3])}]""")
+                st.markdown(f"""##### 5.  {df3['District'].iloc[4]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[4])}]""")
+                st.markdown(f"""##### 6.  {df3['District'].iloc[5]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[5])}]""")
+                st.markdown(f"""##### 7.  {df3['District'].iloc[6]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[6])}]""")
+                st.markdown(f"""##### 8.  {df3['District'].iloc[7]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[7])}]""")
+                st.markdown(f"""##### 9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]""")
+                st.markdown(f"""##### 10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
             elif Tran_pincode_button:
                 mycursor.execute(f"""SELECT Pincode, Transaction_Amount
                                     FROM top_transaction_pincode
@@ -244,14 +259,18 @@ if selected == "Explore Data":
                 st.dataframe(df2)
 
             if bar1:
-            #     plt.figure(figsize=(12, 6))
-            #     plt.bar(x=a['Transaction_Type'], y = a['Total_Amount'], height=1000, align='center', alpha=0.5,color="#555",width=0.8, hatch="/")
-            #     plt.xlabel("Transaction_Type")
-            #     plt.ylabel("Total_Amount")
-            #     plt.title(f"Category")
-            #     plt.xticks(rotation=45, ha='right')
-            #     plt.tight_layout()
-                st.bar_chart(df1, x='Transaction_Type', y = 'Total_Amount' )
+                new=px.bar(df1,x='Transaction_Type', y = 'Total_Amount', color='Total_Amount', color_continuous_scale = 'thermal', title = 'Transaction Category Analysis Chart', height = 600,)
+                new.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(new,use_container_width=True)
+                # plt.figure(figsize=(12, 6))
+                # plt.bar(x=df1['Transaction_Type'], y = df1['Total_Amount'], align='center', alpha=0.5,color="#555",width=0.8, hatch="/")
+                # plt.xlabel("Transaction_Type")
+                # plt.ylabel("Total_Amount")
+                # plt.title(f"Category")
+                # plt.xticks(rotation=45, ha='right')
+                # plt.tight_layout()
+                # st.write(plt.show())
+                # st.plotly_chart(new)
 
 
     with tab2:
@@ -277,6 +296,12 @@ if selected == "Explore Data":
                 district_button = st.button('District ')
             with col8:
                 pincode_button = st.button('Postal Code ')
+            st.header('', divider='rainbow')
+            mycursor.execute('select DISTINCT(State) from aggeregated_user;')
+            data11=mycursor.fetchall()
+            brand_state=st.selectbox('select the state',[i[0] for i in data11])
+            st.write('click the "Brand Analysis" button')
+            brand=st.button('Brand Analysis')
             if state_button:
                 mycursor.execute(f"""SELECT State, sum(Registered_User) as Registered_User FROM top_user_district 
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY State ORDER BY Registered_User DESC LIMIT 10;""")
@@ -327,6 +352,7 @@ if selected == "Explore Data":
                                     \n9.  {df8['Pincode'].iloc[8]} :blue[{Number_Conversion(df8['Registered_User'].iloc[8])}]
                                     \n10.  {df8['Pincode'].iloc[9]} :blue[{Number_Conversion(df8['Registered_User'].iloc[9])}]""")
                 st.dataframe(df8)
+                
 
         with col6:
             if year and quarter:
@@ -354,3 +380,42 @@ if selected == "Explore Data":
             fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Registered PhonePe User = %{customdata[0]}<br>PhonePe App Opens = %{customdata[1]}')
 
             st.plotly_chart(fig)
+#-----------------------------------------------/ Aggregated user /---------------------------------------------------------------------
+            if year and quarter:
+
+                mycursor.execute(f"""SELECT State, SUM(User_Count) AS User_Count FROM aggeregated_user 
+                                 WHERE Year = 2018 AND Quarter = 1 GROUP BY State;""")
+                data10 = mycursor.fetchall()
+
+                dff4 = pd.DataFrame(data10, columns = [i[0] for i in mycursor.description])
+
+            dff4['State']=geo_state
+            dff4['User_Count'] = dff4['User_Count'].astype(int)
+
+            fig1 = px.choropleth(
+                dff4,
+                geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
+                featureidkey='properties.ST_NM',
+                locations='State',
+                color='User_Count',
+                hover_name='State',
+                custom_data='User_Count',
+                color_continuous_scale='earth')
+
+            fig1.update_geos(fitbounds="locations", visible=False)
+            fig1.update_traces(hovertemplate='<b>%{hovertext}</b><br>User_Count = %{customdata[0]}')
+
+            st.plotly_chart(fig1)
+
+            if year and quarter and brand:
+                # mycursor.execute('select DISTINCT(State) from aggeregated_user;')
+                # data11=mycursor.fetchall()
+                # brand_state=st.selectbox('select the state',[i[0] for i in data11])
+                if brand_state:
+                    mycursor.execute(f"""SELECT Brand, User_Count FROM aggeregated_user 
+                                    WHERE Year = {year} AND Quarter = {quarter} AND State = '{brand_state}';""")
+                    data12=mycursor.fetchall()  
+                    df12=pd.DataFrame(data12, columns= [i[0] for i in mycursor.description])
+                    new1=px.bar(df12,x='Brand', y = 'User_Count', color='User_Count', color_continuous_scale = 'thermal', title = 'User Brand Analysis Chart', height = 600,)
+                    new1.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                    st.plotly_chart(new1,use_container_width=True)
