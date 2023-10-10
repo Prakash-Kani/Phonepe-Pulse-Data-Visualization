@@ -139,17 +139,9 @@ if selected == "Explore Data":
                                 ORDER BY top.Total_Transaction_Amount desc limit 10;""")
                 data1 = mycursor.fetchall()
                 df2=pd.DataFrame(data1, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df2['State'].iloc[0]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[0])}]
-                                    \n2.  {df2['State'].iloc[1]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[1])}]
-                                    \n3.  {df2['State'].iloc[2]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[2])}]
-                                    \n4.  {df2['State'].iloc[3]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[3])}]
-                                    \n5.  {df2['State'].iloc[4]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[4])}]
-                                    \n6.  {df2['State'].iloc[5]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[5])}]
-                                    \n7.  {df2['State'].iloc[6]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[6])}]
-                                    \n8.  {df2['State'].iloc[7]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[7])}]
-                                    \n9.  {df2['State'].iloc[8]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[8])}]
-                                    \n10.  {df2['State'].iloc[9]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[9])}]""")
-                st.dataframe(df2)
+                for i in range(df2.shape[0]):
+                    st.markdown(f"""##### {i + 1}.  {df2['State'].iloc[i]} :blue[{Number_Conversion(df2['Total_Transaction_Amount'].iloc[i])}]""")
+
             elif Tran_district_button:
                 mycursor.execute(f"""SELECT top.District, top.Total_Transaction_Amount
                                 FROM (
@@ -161,16 +153,8 @@ if selected == "Explore Data":
                                 ORDER BY top.Total_Transaction_Amount desc limit 10;""")
                 data2 = mycursor.fetchall()
                 df3=pd.DataFrame(data2, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df3['District'].iloc[0]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[0])}]""")
-                st.markdown(f"""##### 2.  {df3['District'].iloc[1]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[1])}]""")
-                st.markdown(f"""##### 3.  {df3['District'].iloc[2]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[2])}]""")
-                st.markdown(f"""##### 4.  {df3['District'].iloc[3]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[3])}]""")
-                st.markdown(f"""##### 5.  {df3['District'].iloc[4]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[4])}]""")
-                st.markdown(f"""##### 6.  {df3['District'].iloc[5]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[5])}]""")
-                st.markdown(f"""##### 7.  {df3['District'].iloc[6]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[6])}]""")
-                st.markdown(f"""##### 8.  {df3['District'].iloc[7]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[7])}]""")
-                st.markdown(f"""##### 9.  {df3['District'].iloc[8]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[8])}]""")
-                st.markdown(f"""##### 10.  {df3['District'].iloc[9]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[9])}]""")
+                for i in range(df3.shape[0]):
+                    st.markdown(f"""##### {i + 1}.  {df3['District'].iloc[i]} :blue[{Number_Conversion(df3['Total_Transaction_Amount'].iloc[i])}]""")
             elif Tran_pincode_button:
                 mycursor.execute(f"""SELECT Pincode, Transaction_Amount
                                     FROM top_transaction_pincode
@@ -178,17 +162,8 @@ if selected == "Explore Data":
                                     ORDER BY Transaction_Amount DESC LIMIT 10;""")
                 data3 = mycursor.fetchall()
                 df4=pd.DataFrame(data3, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df4['Pincode'].iloc[0]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[0])}]
-                                    \n2.  {df4['Pincode'].iloc[1]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[1])}]
-                                    \n3.  {df4['Pincode'].iloc[2]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[2])}]
-                                    \n4.  {df4['Pincode'].iloc[3]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[3])}]
-                                    \n5.  {df4['Pincode'].iloc[4]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[4])}]
-                                    \n6.  {df4['Pincode'].iloc[5]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[5])}]
-                                    \n7.  {df4['Pincode'].iloc[6]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[6])}]
-                                    \n8.  {df4['Pincode'].iloc[7]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[7])}]
-                                    \n9.  {df4['Pincode'].iloc[8]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[8])}]
-                                    \n10.  {df4['Pincode'].iloc[9]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[9])}]""")
-                st.dataframe(df4)
+                for i in range(df4.shape[0]):
+                    st.markdown(f"##### {i + 1}.  {df4['Pincode'].iloc[i]} :blue[{Number_Conversion(df4['Transaction_Amount'].iloc[i])}]")
 
         with col1:
             if year and quarter:
@@ -253,24 +228,33 @@ if selected == "Explore Data":
             st.plotly_chart(fig)
 
             if Tran_state_button:
-                st.write(df1 )
+                # st.write(df2 )
+                bargraph1 = px.bar(df2, x ='State', y = 'Total_Transaction_Amount', text = 'Total_Transaction_Amount', color='Total_Transaction_Amount',
+                            color_continuous_scale = 'thermal', title = 'Top 10 State Transaction Analysis Chart', height = 600)
+                bargraph1.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph1,use_container_width=True)
 
-            elif Tran_state_button:
-                st.dataframe(df2)
+
+            if Tran_district_button:
+                bargraph2 = px.bar(df3, x ='District', y = 'Total_Transaction_Amount', text = 'Total_Transaction_Amount', color='Total_Transaction_Amount',
+                            color_continuous_scale = 'thermal', title = 'Top 10 District Transaction Analysis Chart', height = 600)
+                bargraph2.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph2,use_container_width=True)
+
+            if Tran_pincode_button:
+                newdf=df4
+                newdf['Pincode'] = newdf['Pincode'].astype(str)
+                bargraph3 = px.bar(newdf, x ='Pincode', y = 'Transaction_Amount', text = 'Transaction_Amount', color='Transaction_Amount',
+                            color_continuous_scale = 'thermal', title = 'Top 10 Postal Code Transaction Analysis Chart', height = 600)
+                bargraph3.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph3,use_container_width=True)
+
 
             if bar1:
-                new=px.bar(df1,x='Transaction_Type', y = 'Total_Amount', color='Total_Amount', color_continuous_scale = 'thermal', title = 'Transaction Category Analysis Chart', height = 600,)
+                new=px.bar(df1, x = 'Total_Amount', y ='Transaction_Type', text = 'Total_Amount', color='Total_Amount',
+                            color_continuous_scale = 'thermal', title = 'Transaction Category Analysis Chart', height = 600, orientation= 'h')
                 new.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
                 st.plotly_chart(new,use_container_width=True)
-                # plt.figure(figsize=(12, 6))
-                # plt.bar(x=df1['Transaction_Type'], y = df1['Total_Amount'], align='center', alpha=0.5,color="#555",width=0.8, hatch="/")
-                # plt.xlabel("Transaction_Type")
-                # plt.ylabel("Total_Amount")
-                # plt.title(f"Category")
-                # plt.xticks(rotation=45, ha='right')
-                # plt.tight_layout()
-                # st.write(plt.show())
-                # st.plotly_chart(new)
 
 
     with tab2:
@@ -307,53 +291,27 @@ if selected == "Explore Data":
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY State ORDER BY Registered_User DESC LIMIT 10;""")
                 data8 = mycursor.fetchall()
                 df6 = pd.DataFrame(data8, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df6['State'].iloc[0]} :blue[{Number_Conversion(df6['Registered_User'].iloc[0])}]
-                                    \n2.  {df6['State'].iloc[1]} :blue[{Number_Conversion(df6['Registered_User'].iloc[1])}]
-                                    \n3.  {df6['State'].iloc[2]} :blue[{Number_Conversion(df6['Registered_User'].iloc[2])}]
-                                    \n4.  {df6['State'].iloc[3]} :blue[{Number_Conversion(df6['Registered_User'].iloc[3])}]
-                                    \n5.  {df6['State'].iloc[4]} :blue[{Number_Conversion(df6['Registered_User'].iloc[4])}]
-                                    \n6.  {df6['State'].iloc[5]} :blue[{Number_Conversion(df6['Registered_User'].iloc[5])}]
-                                    \n7.  {df6['State'].iloc[6]} :blue[{Number_Conversion(df6['Registered_User'].iloc[6])}]
-                                    \n8.  {df6['State'].iloc[7]} :blue[{Number_Conversion(df6['Registered_User'].iloc[7])}]
-                                    \n9.  {df6['State'].iloc[8]} :blue[{Number_Conversion(df6['Registered_User'].iloc[8])}]
-                                    \n10.  {df6['State'].iloc[9]} :blue[{Number_Conversion(df6['Registered_User'].iloc[9])}]""")
-                st.dataframe(df6)
+                for i in range(df6.shape[0]):
+                    st.markdown(f"""##### {i + 1}.  {df6['State'].iloc[i]} :blue[{Number_Conversion(df6['Registered_User'].iloc[i])}]""")
+                
             elif district_button:
                 mycursor.execute(f"""SELECT District, sum(Registered_User) as Registered_User FROM top_user_district 
                                  WHERE Year = {year} AND Quarter = {quarter} GROUP BY District ORDER BY Registered_User DESC LIMIT 10;""")
                 data9 = mycursor.fetchall()
 
                 df7 = pd.DataFrame(data9, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df7['District'].iloc[0]} :blue[{Number_Conversion(df7['Registered_User'].iloc[0])}]
-                                    \n2.  {df7['District'].iloc[1]} :blue[{Number_Conversion(df7['Registered_User'].iloc[1])}]
-                                    \n3.  {df7['District'].iloc[2]} :blue[{Number_Conversion(df7['Registered_User'].iloc[2])}]
-                                    \n4.  {df7['District'].iloc[3]} :blue[{Number_Conversion(df7['Registered_User'].iloc[3])}]
-                                    \n5.  {df7['District'].iloc[4]} :blue[{Number_Conversion(df7['Registered_User'].iloc[4])}]
-                                    \n6.  {df7['District'].iloc[5]} :blue[{Number_Conversion(df7['Registered_User'].iloc[5])}]
-                                    \n7.  {df7['District'].iloc[6]} :blue[{Number_Conversion(df7['Registered_User'].iloc[6])}]
-                                    \n8.  {df7['District'].iloc[7]} :blue[{Number_Conversion(df7['Registered_User'].iloc[7])}]
-                                    \n9.  {df7['District'].iloc[8]} :blue[{Number_Conversion(df7['Registered_User'].iloc[8])}]
-                                    \n10.  {df7['District'].iloc[9]} :blue[{Number_Conversion(df7['Registered_User'].iloc[9])}]""")
-                st.dataframe(df7)
+                for i in range(df7.shape[0]):
+                    st.markdown(f"""##### {i + 1}.  {df7['District'].iloc[i]} :blue[{Number_Conversion(df7['Registered_User'].iloc[i])}]""")
+                
             elif pincode_button:
                 mycursor.execute(f"""SELECT Pincode, Registered_User FROM top_user_pincode 
                                  WHERE Year = {year} AND Quarter = {quarter} ORDER BY Registered_User DESC LIMIT 10;""")
                 data10 = mycursor.fetchall()
 
                 df8 = pd.DataFrame(data10, columns = [i[0] for i in mycursor.description])
-                st.markdown(f"""##### 1.  {df8['Pincode'].iloc[0]} :blue[{Number_Conversion(df8['Registered_User'].iloc[0])}]
-                                    \n 2.  {df8['Pincode'].iloc[1]} :blue[{Number_Conversion(df8['Registered_User'].iloc[1])}]
-                                    \n 3.  {df8['Pincode'].iloc[2]} :blue[{Number_Conversion(df8['Registered_User'].iloc[2])}]
-                                    \n4.  {df8['Pincode'].iloc[3]} :blue[{Number_Conversion(df8['Registered_User'].iloc[3])}]
-                                    \n5.  {df8['Pincode'].iloc[4]} :blue[{Number_Conversion(df8['Registered_User'].iloc[4])}]
-                                    \n6.  {df8['Pincode'].iloc[5]} :blue[{Number_Conversion(df8['Registered_User'].iloc[5])}]
-                                    \n7.  {df8['Pincode'].iloc[6]} :blue[{Number_Conversion(df8['Registered_User'].iloc[6])}]
-                                    \n8.  {df8['Pincode'].iloc[7]} :blue[{Number_Conversion(df8['Registered_User'].iloc[7])}]
-                                    \n9.  {df8['Pincode'].iloc[8]} :blue[{Number_Conversion(df8['Registered_User'].iloc[8])}]
-                                    \n10.  {df8['Pincode'].iloc[9]} :blue[{Number_Conversion(df8['Registered_User'].iloc[9])}]""")
-                st.dataframe(df8)
+                for i in range(df8.shape[0]):
+                    st.markdown(f"""##### {i + 1}.  {df8['Pincode'].iloc[i]} :blue[{Number_Conversion(df8['Registered_User'].iloc[i])}]""")
                 
-
         with col6:
             if year and quarter:
 
@@ -407,15 +365,33 @@ if selected == "Explore Data":
 
             st.plotly_chart(fig1)
 
-            if year and quarter and brand:
-                # mycursor.execute('select DISTINCT(State) from aggeregated_user;')
-                # data11=mycursor.fetchall()
-                # brand_state=st.selectbox('select the state',[i[0] for i in data11])
-                if brand_state:
-                    mycursor.execute(f"""SELECT Brand, User_Count FROM aggeregated_user 
-                                    WHERE Year = {year} AND Quarter = {quarter} AND State = '{brand_state}';""")
-                    data12=mycursor.fetchall()  
-                    df12=pd.DataFrame(data12, columns= [i[0] for i in mycursor.description])
-                    new1=px.bar(df12,x='Brand', y = 'User_Count', color='User_Count', color_continuous_scale = 'thermal', title = 'User Brand Analysis Chart', height = 600,)
-                    new1.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
-                    st.plotly_chart(new1,use_container_width=True)
+            if year and quarter and brand_state and brand:
+                mycursor.execute(f"""SELECT Brand, User_Count FROM aggeregated_user 
+                                WHERE Year = {year} AND Quarter = {quarter} AND State = '{brand_state}' ORDER BY User_count ASC;""")
+                data12=mycursor.fetchall()  
+                df12=pd.DataFrame(data12, columns= [i[0] for i in mycursor.description])
+                new1=px.bar(df12,x = 'User_Count', y ='Brand', text='User_Count', color='User_Count', color_continuous_scale = 'thermal',
+                             title = 'User Brand Analysis Chart', height = 600, orientation='h')
+                new1.update_layout(title_font=dict(size=33), title_font_color='#6739b7')
+                st.plotly_chart(new1, use_container_width=True)
+
+            if state_button:
+                bargraph4 = px.bar(df6, x ='State', y = 'Registered_User', text = 'Registered_User', color='Registered_User',
+                            color_continuous_scale = 'thermal', title = 'Top 10 State Registered User Analysis Chart', height = 600)
+                bargraph4.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph4,use_container_width=True)
+
+
+            if district_button:
+                bargraph5 = px.bar(df7, x ='District', y = 'Registered_User', text = 'Registered_User', color='Registered_User',
+                            color_continuous_scale = 'thermal', title = 'Top 10 District Registered User Analysis Chart', height = 600)
+                bargraph5.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph5,use_container_width=True)
+
+            if pincode_button:
+                newdf=df8
+                newdf['Pincode'] = newdf['Pincode'].astype(str)
+                bargraph6 = px.bar(newdf, x ='Pincode', y = 'Registered_User', text = 'Registered_User', color='Registered_User',
+                            color_continuous_scale = 'thermal', title = 'Top 10 Postal Code Registered User Analysis Chart', height = 600)
+                bargraph6.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                st.plotly_chart(bargraph6,use_container_width=True)
