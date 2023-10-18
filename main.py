@@ -8,29 +8,30 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import seaborn as sns
 import mysql.connector
+import main_def
 import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-# load_dotenv()
+load_dotenv()
 
-# # MYSQL Connection
-# mysql_host_name = os.getenv("MYSQL_HOST_NAME")
-# mysql_user_name = os.getenv("MYSQL_USER_NAME")
-# mysql_password = os.getenv("MYSQL_PASSWORD")
-# mysql_database_name = os.getenv("MYSQL_DATABASE_NAME")
+# MYSQL Connection
+mysql_host_name = os.getenv("MYSQL_HOST_NAME")
+mysql_user_name = os.getenv("MYSQL_USER_NAME")
+mysql_password = os.getenv("MYSQL_PASSWORD")
+mysql_database_name = os.getenv("MYSQL_DATABASE_NAME")
 
-# db = mysql.connector.connect(host = mysql_host_name,
-#                              user = mysql_user_name,
-#                              password = mysql_password,
-#                              database = mysql_database_name)
-# mycursor = db.cursor(buffered = True)
-
-db = mysql.connector.connect(host = 'localhost',
-                             user = 'root',
-                             password = 'Prakashk14',
-                             database = 'phonepe')
+db = mysql.connector.connect(host = mysql_host_name,
+                             user = mysql_user_name,
+                             password = mysql_password,
+                             database = mysql_database_name)
 mycursor = db.cursor(buffered = True)
+
+# db = mysql.connector.connect(host = 'localhost',
+#                              user = 'root',
+#                              password = 'Prakashk14',
+#                              database = 'phonepe')
+# mycursor = db.cursor(buffered = True)
 
 def Number_Conversion(number):
     if number // 10**7:
@@ -67,7 +68,7 @@ textColor="#ffffff"
 
 st.sidebar.header(":violet[**PhonePe Pulse**]")
 with st.sidebar:
-    selected = option_menu("Menu", ["Explore Data","About"], 
+    selected = option_menu("Menu", ["Explore Data","Analysis","Home"], 
                 # icons=["house","graph-up-arrow","bar-chart-line", "exclamation-circle"],
                 menu_icon= "menu-button-wide",
                 default_index=0,
@@ -178,90 +179,26 @@ if selected == "Explore Data":
 
         with col1:
             if year and quarter:
-
-                mycursor.execute(f"""SELECT g.State, g.Total_Transaction_Count, g.Total_Transaction_Amount,
-                                        round((g.Total_Transaction_Amount / g.Total_Transaction_Count),2) as Average_Transaction_Amount
-                                    FROM (
-                                        SELECT State, 
-                                            SUM(Transaction_Count) as Total_Transaction_Count, 
-                                            SUM(Transaction_Amount) as Total_Transaction_Amount
-                                        FROM map_transaction  
-                                        WHERE Year = {year} AND Quarter = {quarter}
-                                        GROUP BY State
-                                    ) as g;""")
-                data4 = mycursor.fetchall()
-
-                dff = pd.DataFrame(data4, columns=[i[0] for i in mycursor.description])
-                dff['State'] = geo_state
-
-                fig = px.choropleth(
-                    dff,
-                    geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
-                    featureidkey='properties.ST_NM',
-                    locations='State',
-                    color='Total_Transaction_Amount',
-                    hover_name='State',
-                    custom_data=['Total_Transaction_Count', 'Total_Transaction_Amount', 'Average_Transaction_Amount'],
-                    color_continuous_scale='purples')
-
-                fig.update_geos(fitbounds="locations", visible=False)
-                fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Transaction Count = %{customdata[0]}<br>Transaction Amount = %{customdata[1]}<br>Average Transaction Amount = %{customdata[2]}')
-                # fig.update_layout(
-                #         plot_bgcolor='#10CD04 ',
-                #         paper_bgcolor="#3D2E61",
-                #         font_color='#087FA5',
-                #         font_size=12
-                # ),
+                fig = main_def.transaction_geo_fig1(year, quarter)
                 st.plotly_chart(fig)
 
             #------------------------------------------------------/aggregated transaction/-------------------
             if year and quarter and tran_type:
-
-                mycursor.execute(f"""select State, Transaction_Count, Transaction_Type, Transaction_Amount,(Transaction_Amount/Transaction_Count) as Avearge_Amount from aggregated_transaction 
-                                where  year={year} and quarter={quarter} and Transaction_Type = '{tran_type}';""")
-                data5 = mycursor.fetchall()
-                # print(data4)
-
-                dff1 = pd.DataFrame(data5, columns = [i[0] for i in mycursor.description])
-
-                dff1['State']=geo_state
-
-                fig1 = px.choropleth(
-                    dff1,
-                    geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
-                    featureidkey='properties.ST_NM',
-                    locations='State',
-                    color='Transaction_Amount',
-                    hover_name='State',
-                    custom_data=['Transaction_Type', 'Transaction_Count', 'Transaction_Amount', 'Avearge_Amount'],
-                    color_continuous_scale='rainbow')
-
-                fig1.update_geos(fitbounds="locations", visible=False)
-                fig1.update_traces(hovertemplate='<b>%{hovertext}</b><br>Transaction Type = %{customdata[0]}<br>Transaction Count = %{customdata[1]}<br>Transaction Amount = %{customdata[2]}<br>Avearge Amount = %{customdata[3]}')
-
+                fig1 = main_def.transaction_geo_fig2(year, quarter,tran_type)
                 st.plotly_chart(fig1)
 
             if Tran_state_button:
                 # st.write(df2 )
-                bargraph1 = px.bar(df2, x ='State', y = 'Total_Transaction_Count', text = 'Total_Transaction_Count', color='Total_Transaction_Count',
-                            color_continuous_scale = 'thermal', title = 'Top 10 State Transaction Analysis Chart', height = 600)
-                bargraph1.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph1 = main_def.top10_transaction_state_fig(year, quarter)
                 st.plotly_chart(bargraph1,use_container_width=True)
 
 
             elif Tran_district_button:
-                bargraph2 = px.bar(df3, x ='District', y = 'Total_Transaction_Count', text = 'Total_Transaction_Count', color='Total_Transaction_Count',
-                            color_continuous_scale = 'thermal', title = 'Top 10 District Transaction Analysis Chart', height = 600)
-                bargraph2.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph2 = main_def.top10_transaction_district_fig(year, quarter)
                 st.plotly_chart(bargraph2,use_container_width=True)
 
             elif Tran_pincode_button:
-                newdf=df4
-                newdf['Pincode'] = newdf['Pincode'].astype(str)
-                newdf['Pincode'] = newdf['Pincode']+'-'
-                bargraph3 = px.bar(newdf, x ='Pincode', y = 'Transaction_Count', text = 'Transaction_Count', color='Transaction_Count',
-                            color_continuous_scale = 'thermal', title = 'Top 10 Postal Code Transaction Analysis Chart', height = 600)
-                bargraph3.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph3 = main_def.top10_transaction_pincode_fig(year, quarter)
                 st.plotly_chart(bargraph3,use_container_width=True)
 
 
@@ -273,9 +210,7 @@ if selected == "Explore Data":
             
             else:
                 # st.write(df2 )
-                bargraph1 = px.bar(df2, x ='State', y = 'Total_Transaction_Count', text = 'Total_Transaction_Count', color='Total_Transaction_Count',
-                            color_continuous_scale = 'thermal', title = 'Top 10 State Transaction Analysis Chart', height = 600)
-                bargraph1.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph1 = main_def.top10_transaction_state_fig(year, quarter)
                 st.plotly_chart(bargraph1,use_container_width=True)
 
     with tab2:
@@ -302,14 +237,8 @@ if selected == "Explore Data":
             brand=pd.DataFrame(data2, columns = [i[0] for i in mycursor.description])
             for i in range(brand.shape[0]):
                 st.markdown(f"##### {i+1}. {brand['Brand'].iloc[i]} <=> :blue[{Number_Conversion(brand['Total_User_Count'].iloc[i])}]")
-            st.header('',divider ='gray')
+            # st.header('',divider ='gray')
             
-
-            mycursor.execute('select DISTINCT(State) from aggeregated_user;')
-            data11=mycursor.fetchall()
-            brand_state=st.selectbox('select the state',[i[0] for i in data11])
-            st.write('click the "Brand Analysis" button')
-            brand=st.button('Brand Analysis')
             st.header('', divider='rainbow')
             col8,col9,col10 =st.columns([1,1,2])
             with col8:
@@ -364,91 +293,57 @@ if selected == "Explore Data":
         with col6:
             if year and quarter:
 
-                mycursor.execute(f"""SELECT State, sum(Registered_User) as Registered_PhonePe_Users, sum(App_Opens) as PhonePe_App_Opens FROM map_user 
-                                 WHERE Year = {year} AND Quarter = {quarter} GROUP BY State ORDER BY State;""")
-                data6 = mycursor.fetchall()
-
-                dff3 = pd.DataFrame(data6, columns = [i[0] for i in mycursor.description])
-
-                dff3['State']=geo_state
-                dff3['Registered_PhonePe_Users'] = dff3['Registered_PhonePe_Users'].astype(int)
-
-                fig = px.choropleth(dff3,
-                                    geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
-                                    featureidkey='properties.ST_NM',
-                                    locations='State',
-                                    color='Registered_PhonePe_Users',
-                                    hover_name='State',
-                                    custom_data=['Registered_PhonePe_Users', 'PhonePe_App_Opens'],
-                                    color_continuous_scale='Teal')
-
-                fig.update_geos(fitbounds="locations", visible=False)
-                fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Registered PhonePe User = %{customdata[0]}<br>PhonePe App Opens = %{customdata[1]}')
-
+            
+                fig = main_def.user_geo_fig1(year, quarter)
                 st.plotly_chart(fig)
-#-----------------------------------------------/ Aggregated user /---------------------------------------------------------------------
+#-----------------------------------------------/ Aggregated user figure/---------------------------------------------------------------------
             if year and quarter:
-
-                mycursor.execute(f"""SELECT State, SUM(User_Count) AS User_Count FROM aggeregated_user 
-                                 WHERE Year = {year} AND Quarter = {quarter} GROUP BY State;""")
-                data10 = mycursor.fetchall()
-
-                dff4 = pd.DataFrame(data10, columns = [i[0] for i in mycursor.description])
-
-                dff4['State']=geo_state
-                if year < 2022:
-                    dff4['User_Count'] = dff4['User_Count'].astype(int)
-                elif year == 2022 and quarter == 1:
-                    dff4['User_Count'] = dff4['User_Count'].astype(int)
-
-                fig1 = px.choropleth(dff4,
-                                     geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
-                                     featureidkey='properties.ST_NM',
-                                     locations='State',
-                                     color='User_Count',
-                                     hover_name='State',
-                                     custom_data='User_Count',
-                                     color_continuous_scale='earth')
-
-                fig1.update_geos(fitbounds="locations", visible=False)
-                fig1.update_traces(hovertemplate='<b>%{hovertext}</b><br>User_Count = %{customdata[0]}')
-
+                fig1 = main_def.user_treemap_fig2(year, quarter)
                 st.plotly_chart(fig1)
 
-            if year and quarter and brand_state and brand:
-                mycursor.execute(f"""SELECT Brand, User_Count FROM aggeregated_user 
-                                WHERE Year = {year} AND Quarter = {quarter} AND State = '{brand_state}' ORDER BY User_count ASC;""")
-                data12=mycursor.fetchall()  
-                df12=pd.DataFrame(data12, columns= [i[0] for i in mycursor.description])
-                new1=px.bar(df12,x = 'User_Count', y ='Brand', text='User_Count', color='User_Count', color_continuous_scale = 'thermal',
-                             title = 'User Brand Analysis Chart', height = 600, orientation='h')
-                new1.update_layout(title_font=dict(size=33), title_font_color='#6739b7')
-                st.plotly_chart(new1, use_container_width=True)
-
-            elif state_button:
-                bargraph4 = px.bar(df6, x ='State', y = 'Total_Registered_Users', text = 'Total_Registered_Users', color='Total_Registered_Users',
-                            color_continuous_scale = 'thermal', title = 'Top 10 State Registered User Analysis Chart', height = 600)
-                bargraph4.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+            if state_button:
+                bargraph4 = main_def.top10_user_state_fig(year, quarter)
                 st.plotly_chart(bargraph4,use_container_width=True)
 
-
             elif district_button:
-                bargraph5 = px.bar(df7, x ='District', y = 'Registered_User', text = 'Registered_User', color='Registered_User',
-                            color_continuous_scale = 'thermal', title = 'Top 10 District Registered User Analysis Chart', height = 600)
-                bargraph5.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph5 = main_def.top10_user_district_fig(year, quarter)
                 st.plotly_chart(bargraph5,use_container_width=True)
 
             elif pincode_button:
-                newdf=df8
-                newdf['Pincode'] = newdf['Pincode'].astype(str)
-                newdf['Pincode'] = newdf['Pincode']+'-'
-                bargraph6 = px.bar(newdf, x ='Pincode', y = 'Registered_User', text = 'Registered_User', color='Registered_User',
-                            color_continuous_scale = 'thermal', title = 'Top 10 Postal Code Registered User Analysis Chart', height = 600)
-                bargraph6.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph6 = main_def.top10_user_pincode_fig(year, quarter)
                 st.plotly_chart(bargraph6,use_container_width=True)
 
             else:
-                bargraph4 = px.bar(df6, x ='State', y = 'Total_Registered_Users', text = 'Total_Registered_Users', color='Total_Registered_Users',
-                            color_continuous_scale = 'thermal', title = 'Top 10 State Registered User Analysis Chart', height = 600)
-                bargraph4.update_layout(title_font=dict(size=33),title_font_color='#6739b7')
+                bargraph4 = main_def.top10_user_state_fig(year, quarter)
                 st.plotly_chart(bargraph4,use_container_width=True)
+elif selected == "Analysis":
+    analysis_type = st.selectbox('**Select the Type of Analysis**',['Day','Month'])
+    if year and quarter and tran_type:
+        if analysis_type == 'Day':
+            fig = main_def.Day_Analysis(year, quarter, tran_type)
+            st.plotly_chart(fig)
+            barchart = main_def.Day_Analysis_barchart(year, quarter, tran_type)
+            st.plotly_chart(barchart, use_container_width=True)
+        elif analysis_type == 'Month':
+            fig = main_def.Month_Analysis(year, quarter, tran_type)
+            st.plotly_chart(fig)
+            barchart = main_def.Month_Analysis_barchart(year, quarter, tran_type)
+            st.plotly_chart(barchart, use_container_width=True)
+elif selected == "Home":
+    st.header(":red[***Welcome To PhonePe Pulse Data Extraction***]")
+    st.markdown("""#####  In this app, we explore and analyze data from PhonePe Pulse, a powerful data visualization and analytics provided by PhonePe, a leading digital payment service in India. PhonePe Pulse offers comprehensive  insights into digital payment trends, transaction data, user behaviors, and more. This project aims to provide a brief overview of the capabilities and features of PhonePe Pulse data visualization. """)
+    st.markdown(""" ## :blue[**Introduction to PhonePe Pulse**]""")
+    st.markdown(""" #####  :red[**PhonePe Pulse**]  is a feature-rich dashboard and data visualization tool that enables businesses and users to gain a deeper understanding of digital payment trends, transaction data, and consumer behaviors. With PhonePe Pulse, you can unlock valuable insights and make data-driven decisions. Here are some key aspects of PhonePe Pulse: """)
+    st.markdown(""" -  :blue[**Transaction Insights:**] Explore various transaction types, including UPI payments, digital wallet transactions, 
+                and more.Analyze transaction data for specific time periods, regions, and transaction categories.""")
+    st.markdown(""" - :blue[**Geographical Analysis:**] Gain insights into transactions across different Indian states and regions. 
+                    Understand transaction volume, values, and trends at a regional level.""")
+    st.markdown(" - :blue[**User Behavior:**] Get a better understanding of user demographics, preferences, and engagement patterns.")
+    st.markdown(" - :blue[**Trend Analysis:**] Track growth trends in different transaction types, identify seasonality, and more.")
+    st.markdown(" - :blue[**User Engagement:**] Learn how and when users engage with the PhonePe app, helping businesses optimize their offerings.")
+    st.markdown(""" - :blue[**Payment Categories:**] Explore transaction data related to various payment categories, such as mobile recharges, 
+                bill payments, peer-to-peer transfers, and more.""")
+    st.markdown(" - :blue[**Data Export:**] Easily export data for further analysis or reporting.")
+    st.markdown(" - :blue[**Custom Dashboards:**] Create custom dashboards and visualizations to meet your specific needs and preferences.")
+    st.markdown(" This project aims to showcase the capabilities of PhonePe Pulse and the insights it can offer to businesses and individual users.")
+    st.markdown(" This project will be divided into several sections, each focusing on specific aspects of PhonePe Pulse data, analysis, and visualization. Stay tuned as we dive into the world of digital payment insights!")
